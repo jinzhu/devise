@@ -236,6 +236,26 @@ module Devise
     self.cookie_options[:domain] = value
   end
 
+  class Getter
+    def initialize name
+      @name = name
+    end
+
+    def get
+      ActiveSupport::Dependencies.constantize(@name)
+    end
+  end
+
+  def self.ref(arg)
+    if defined?(ActiveSupport::Dependencies::ClassCache)
+      ActiveSupport::Dependencies::reference(arg)
+      Getter.new(arg)
+    else
+      ActiveSupport::Dependencies.ref(arg)
+    end
+  end
+
+
   # Get the mailer class from the mailer reference object.
   def self.mailer
     @@mailer_ref.get
@@ -243,7 +263,7 @@ module Devise
 
   # Set the mailer reference object to access the mailer.
   def self.mailer=(class_name)
-    @@mailer_ref = ActiveSupport::Dependencies.ref(class_name)
+    @@mailer_ref = ref(class_name)
   end
   self.mailer = "Devise::Mailer"
 
