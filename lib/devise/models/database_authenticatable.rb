@@ -37,6 +37,8 @@ module Devise
         bcrypt   = ::BCrypt::Password.new(self.encrypted_password)
         password = ::BCrypt::Engine.hash_secret("#{password}#{self.class.pepper}", bcrypt.salt)
         Devise.secure_compare(password, self.encrypted_password)
+      rescue
+        false
       end
 
       # Set password and password confirmation to nil
